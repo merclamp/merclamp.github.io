@@ -34,6 +34,47 @@ body {
   z-index: -3;
 }
 
+/* twinkling starfield */
+.stars {
+  position: fixed;
+  inset: 0;
+  bottom: 40vh;
+  z-index: -3;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 18%, rgba(255,255,255,.9), transparent),
+    radial-gradient(1.5px 1.5px at 70% 12%, rgba(5,217,232,.9), transparent),
+    radial-gradient(1px 1px at 40% 30%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1px 1px at 85% 25%, rgba(255,46,151,.9), transparent),
+    radial-gradient(1.5px 1.5px at 15% 40%, rgba(255,255,255,.85), transparent),
+    radial-gradient(1px 1px at 55% 8%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1px 1px at 90% 45%, rgba(5,217,232,.8), transparent),
+    radial-gradient(1.5px 1.5px at 33% 6%, rgba(255,255,255,.9), transparent);
+  animation: twinkle 4s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: .35; }
+  50%      { opacity: .95; }
+}
+
+/* glowing horizon line where the grid meets the sky */
+.horizon {
+  position: fixed;
+  left: 0; right: 0;
+  bottom: 45vh;
+  height: 2px;
+  z-index: -2;
+  background: var(--cyan);
+  box-shadow:
+    0 0 12px 2px var(--cyan),
+    0 0 40px 6px rgba(5,217,232,.6),
+    0 0 80px 12px rgba(255,46,151,.35);
+  animation: horizon-glow 3s ease-in-out infinite;
+}
+@keyframes horizon-glow {
+  0%, 100% { opacity: .7; }
+  50%      { opacity: 1; }
+}
+
 /* the sun */
 .sun {
   position: fixed;
@@ -53,6 +94,19 @@ body {
       #000 0 12px, transparent 12px 16px);
   -webkit-mask-position: 0 60%;
   mask-position: 0 60%;
+  animation: sun-breathe 5s ease-in-out infinite;
+}
+@keyframes sun-breathe {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+    box-shadow: 0 0 80px 20px rgba(255, 46, 99, .55),
+                0 0 160px 60px rgba(255, 99, 132, .35);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-10px);
+    box-shadow: 0 0 110px 30px rgba(255, 46, 99, .7),
+                0 0 210px 80px rgba(255, 99, 132, .45);
+  }
 }
 /* solid top of the sun (no stripes near top) */
 .sun::before {
@@ -161,8 +215,17 @@ body {
   font-weight: 500;
   font-size: clamp(.7rem, 2.6vw, 1.05rem);
   letter-spacing: .18em;
-  color: var(--cyan);
-  text-shadow: 0 0 10px rgba(5,217,232,.7);
+  background: linear-gradient(90deg, var(--cyan), var(--pink), var(--purple), var(--cyan));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 10px rgba(5,217,232,.5));
+  animation: tagline-shift 6s linear infinite;
+}
+@keyframes tagline-shift {
+  from { background-position: 0% 50%; }
+  to   { background-position: 300% 50%; }
 }
 
 /* info cards */
@@ -184,6 +247,16 @@ body {
   box-shadow: 0 0 14px rgba(123, 47, 247, .35) inset,
               0 0 12px rgba(255, 46, 151, .25);
   transition: transform .25s ease, box-shadow .25s ease;
+  opacity: 0;
+  animation: fade-in .6s ease forwards;
+}
+.card:nth-child(1) { animation-delay: .15s; }
+.card:nth-child(2) { animation-delay: .30s; }
+.card:nth-child(3) { animation-delay: .45s; }
+.card:nth-child(4) { animation-delay: .60s; }
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 .card:hover {
   transform: translateY(-6px);
@@ -223,6 +296,13 @@ body {
   background: linear-gradient(90deg, rgba(255,46,151,.18), rgba(123,47,247,.18));
   box-shadow: 0 0 10px rgba(255,46,151,.35);
   text-shadow: 0 0 6px rgba(255,46,151,.6);
+  cursor: default;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.chip:hover {
+  transform: translateY(-3px) scale(1.05);
+  border-color: var(--cyan);
+  box-shadow: 0 0 16px rgba(5,217,232,.6);
 }
 
 /* section titles */
@@ -360,3 +440,13 @@ footer {
   color: rgba(255,255,255,.55);
 }
 footer .heart { color: var(--pink); }
+
+/* respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .card { opacity: 1 !important; }
+}
